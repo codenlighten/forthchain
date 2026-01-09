@@ -38,48 +38,38 @@
 \ =========================================================
 \ 256-bit Memory-Based Addition (Little Endian)
 \ Usage: ( addr_dest addr_src -- )
-\ Adds the value at src into dest.
+\ Adds the value at src into dest with proper unsigned carry propagation.
 \ =========================================================
 
+0 VALUE ADD-A
+0 VALUE ADD-B
+0 VALUE SUM0
+0 VALUE SUM1
+0 VALUE CARRYIN
+0 VALUE CARRY1
+0 VALUE CARRY2
+0 VALUE ADD-DEST
+0 VALUE ADD-SRC
+
 : 256+! ( addr_dest addr_src -- )
-    \ Save original addresses
-    OVER OVER              ( dest src dest src )
+    TO ADD-SRC TO ADD-DEST
+    0 TO CARRYIN
     
-    \ STEP 1: CELL A (Least Significant)
-    @ SWAP @               ( dest src val_src val_dest )
-    +                      ( dest src sum_a )
-    DUP 2 PICK @ < IF 1 ELSE 0 THEN  ( dest src sum_a carry )
-    ROT ROT               ( dest carry src sum_a )
-    2 PICK !              ( dest carry src )  \ Store to dest
-    
-    \ Move to Cell B
-    8 + SWAP 8 + SWAP     ( carry src+8 dest+8 )
-
-    \ STEP 2: CELL B
-    OVER OVER              ( carry src dest src dest )
-    @ SWAP @               ( carry src dest val_dest val_src )
-    + ROT +                ( src dest sum_b_total )
-    DUP 2 PICK @ < IF 1 ELSE 0 THEN  ( src dest sum_b carry2 )
-    ROT ROT                ( src carry2 dest sum_b )
-    2 PICK !               ( src carry2 dest )
-    
-    \ Move to Cell C
-    8 + SWAP 8 + SWAP      ( carry2 src+16 dest+16 )
-
-    \ STEP 3: CELL C
-    OVER OVER
-    @ SWAP @
-    + ROT +
-    DUP 2 PICK @ < IF 1 ELSE 0 THEN
-    ROT ROT
-    2 PICK !
-    
-    \ Move to Cell D
-    8 + SWAP 8 + SWAP      ( carry3 src+24 dest+24 )
-
-    \ STEP 4: CELL D (Most Significant)
-    OVER @ SWAP @ + ROT +  ( dest sum_d )
-    SWAP ! ;
+    \ Loop over four 64-bit words (least significant first)
+    4 0 DO
+        ADD-DEST I CELLS + @ TO ADD-A
+        ADD-SRC I CELLS + @ TO ADD-B
+        
+        ADD-A ADD-B + TO SUM0
+        SUM0 ADD-A U< IF 1 ELSE 0 THEN TO CARRY1
+        
+        SUM0 CARRYIN + TO SUM1
+        SUM1 SUM0 U< IF 1 ELSE 0 THEN TO CARRY2
+        
+        CARRY1 CARRY2 + 0> IF 1 ELSE 0 THEN TO CARRYIN
+        
+        SUM1 ADD-DEST I CELLS + !
+    LOOP ;
 
 \ =========================================================
 \ 256-bit Memory-Based Right Shift (>> 1)
