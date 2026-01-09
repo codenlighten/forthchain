@@ -16,10 +16,12 @@ INCLUDE src/crypto/sha256.fs
 INCLUDE src/consensus/merkle.fs
 INCLUDE src/consensus/mining.fs
 
-\ 4. Stubs for modules under development
-\ require src/crypto/ecc.fs
-\ require src/storage/storage.fs
-\ require src/net/network.fs
+\ 4. Storage & Networking
+INCLUDE src/storage/storage.fs
+INCLUDE src/net/network.fs
+
+\ 5. Stubs for modules under development
+\ INCLUDE src/crypto/ecc.fs
 
 CR ." [SYSTEM] Core Modules Loaded Successfully." CR
 CR ." [READY] Type 'WORDS' to see available commands." CR

@@ -1,0 +1,32 @@
+# .gitignore for ForthCoin
+
+# Build artifacts
+*.o
+*.fasl
+*.image
+
+# Data files
+blockchain.dat
+debug.log
+*.log
+
+# Test outputs
+test-output.txt
+
+# Editor backups
+*~
+*.swp
+*.swo
+.*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Gforth specific
+gforth.fi
+*.fi

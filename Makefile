@@ -37,8 +37,7 @@ help:
 # ---------------------------------------------------------
 run: test
 	@echo "--- LAUNCHING NODE ---"
-	@echo "Note: Full node not yet implemented"
-	@echo "Use 'make shell' for interactive development"
+	$(FORTH) $(FLAGS) $(SRC_DIR)/main.fs
 
 # ---------------------------------------------------------
 # 2. RUN UNIT TESTS

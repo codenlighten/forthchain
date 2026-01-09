@@ -28,6 +28,8 @@ VARIABLE FAIL-COUNT
 include tests/test_math.fs
 include tests/test_crypto.fs
 include tests/test_merkle.fs
+include tests/test_storage.fs
+include tests/test_net.fs
 
 \ Summary
 CR CR
