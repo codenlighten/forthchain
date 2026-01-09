@@ -1,0 +1,13 @@
+\ Test VALUE addition
+0 VALUE T1
+0 VALUE T2
+
+: TEST-VALUES
+    $54DA50E8 TO T1
+    $08909AE5 TO T2
+    
+    CR ." T1=" T1 HEX. CR
+    ." T2=" T2 HEX. CR
+    ." T1 + T2=" T1 T2 + $FFFFFFFF AND HEX. CR ;
+
+TEST-VALUES

@@ -31,13 +31,18 @@
     MASK32 ;
 
 \ Majority function: Maj(x, y, z) = (x AND y) XOR (x AND z) XOR (y AND z)
+\ Use VALUES to hold intermediate results for clarity
+0 VALUE MAJ-X
+0 VALUE MAJ-Y
+0 VALUE MAJ-Z
+
 : MAJ ( x y z -- res )
-    >R                     \ stash z
-    OVER AND               \ x (x&y)
-    OVER R@ AND            \ x (x&y) (y&z)
-    ROT ROT                \ (y&z) x (x&y)
-    R> AND                 \ (y&z) (x&z) (x&y)
-    XOR XOR MASK32 ;
+    TO MAJ-Z TO MAJ-Y TO MAJ-X
+    MAJ-X MAJ-Y AND
+    MAJ-X MAJ-Z AND XOR
+    MAJ-Y MAJ-Z AND XOR
+    MASK32 ;
+
 
 \ Big Sigma 0: ROTR(2) ^ ROTR(13) ^ ROTR(22)
 : BSIG0 ( x -- res )
