@@ -20,6 +20,7 @@ INCLUDE src/consensus/transactions.fs
 INCLUDE src/consensus/wallet.fs
 INCLUDE src/consensus/mempool.fs
 INCLUDE src/consensus/multisig.fs
+INCLUDE src/consensus/script.fs
 
 \ 4. Storage & Networking
 INCLUDE src/storage/storage.fs
