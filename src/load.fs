@@ -21,10 +21,14 @@ INCLUDE src/consensus/wallet.fs
 INCLUDE src/consensus/mempool.fs
 INCLUDE src/consensus/multisig.fs
 INCLUDE src/consensus/script.fs
+INCLUDE src/consensus/difficulty.fs
 
 \ 4. Storage & Networking
 INCLUDE src/storage/storage.fs
 INCLUDE src/net/network.fs
+
+\ 5. API & Query Interface
+INCLUDE src/api/query.fs
 
 \ 5. CLI Interface
 INCLUDE src/cli/wallet_cli.fs

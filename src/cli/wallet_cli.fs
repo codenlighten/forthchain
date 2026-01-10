@@ -477,6 +477,14 @@ VARIABLE MULTISIG-LOADED
     ."   status           Show node status" CR
     ."   mempool          Show pending transactions" CR
     ." " CR
+    ." QUERY & EXPLORER:" CR
+    ."   block <n>        Query block by height" CR
+    ."   tx <hash>        Query transaction" CR
+    ."   addr-query <addr> Query address info" CR
+    ."   explorer         Launch blockchain explorer" CR
+    ."   search <term>    Search blockchain" CR
+    ."   stats            Show network statistics" CR
+    ." " CR
     ." SYSTEM:" CR
     ."   help             Show this help" CR
     ."   quit             Exit wallet" CR
@@ -551,6 +559,14 @@ CREATE CMD-BUFFER 256 ALLOT
     
     2DUP s" multisig-broadcast" COMPARE 0= IF
         2DROP CMD-MULTISIG-BROADCAST EXIT
+    THEN
+    
+    2DUP s" stats" COMPARE 0= IF
+        2DROP CMD-EXPLORER EXIT
+    THEN
+    
+    2DUP s" explorer" COMPARE 0= IF
+        2DROP CMD-EXPLORER EXIT
     THEN
     
     2DUP s" help" COMPARE 0= IF
