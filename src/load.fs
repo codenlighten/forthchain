@@ -29,8 +29,9 @@ INCLUDE src/net/network.fs
 
 \ 5. API & Query Interface
 INCLUDE src/api/query.fs
+INCLUDE src/api/websocket.fs
 
-\ 5. CLI Interface
+\ 6. CLI Interface
 INCLUDE src/cli/wallet_cli.fs
 
 CR ." [SYSTEM] Core Modules Loaded Successfully." CR
@@ -39,6 +40,7 @@ CR ." 🚀 FORTHCOIN v1.0 - Full Node Ready" CR
 CR ." ════════════════════════════════════════════════════════" CR
 CR ." Available commands:" CR
 CR ."   wallet-cli       Start interactive wallet" CR
+CR ."   start-ws-server  Start WebSocket API server (port 8765)" CR
 CR ."   init-storage     Initialize persistent storage" CR
 CR ."   init-network     Initialize P2P networking" CR
 CR ."   start-listening  Start accepting peer connections" CR
