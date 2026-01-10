@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  node1:
+    build: .
+    container_name: forthcoin-node1
+    hostname: node1
+    networks:
+      forthcoin_net:
+        ipv4_address: 172.20.0.10
+    volumes:
+      - node1_data:/forthcoin/data
+    environment:
+      - NODE_ID=1
+      - PEER_NODES=172.20.0.11:8333
+    ports:
+      - "8333:8333"
+    restart: unless-stopped
+
+  node2:
+    build: .
+    container_name: forthcoin-node2
+    hostname: node2
+    networks:
+      forthcoin_net:
+        ipv4_address: 172.20.0.11
+    volumes:
+      - node2_data:/forthcoin/data
+    environment:
+      - NODE_ID=2
+      - PEER_NODES=172.20.0.10:8333
+    ports:
+      - "8334:8333"
+    restart: unless-stopped
+
+networks:
+  forthcoin_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
+
+volumes:
+  node1_data:
+  node2_data:

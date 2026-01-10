@@ -16,10 +16,6 @@
     0 <# # # # # # # # # # # # # # # # # #> TYPE
     R> BASE ! CR ;
 
-\ Helper: Zero a 256-bit number on the stack
-: 256ZERO ( -- 0 0 0 0 )
-    0 0 0 0 ;
-
 \ Fetch 256-bit from memory to stack
 : 256@ ( addr -- d c b a )
     DUP 24 + @ SWAP
@@ -34,6 +30,31 @@
     R@ 8 + !     \ Store b
     R@ 16 + !    \ Store c
     R> 24 + ! ;  \ Store d (MSB)
+
+\ Helper: Zero a 256-bit variable in memory
+: 256CLEAR ( addr -- )
+    0 OVER !
+    0 OVER 8 + !
+    0 OVER 16 + !
+    0 SWAP 24 + ! ;
+
+\ Helper: Check if 256-bit value is zero
+: 256ZERO? ( addr -- flag )
+    DUP @ 0= 
+    OVER 8 + @ 0= AND
+    OVER 16 + @ 0= AND
+    SWAP 24 + @ 0= AND ;
+
+\ Helper: Copy 256-bit value
+: 256COPY ( src dest -- )
+    OVER @ OVER !
+    OVER 8 + @ OVER 8 + !
+    OVER 16 + @ OVER 16 + !
+    SWAP 24 + @ SWAP 24 + ! ;
+
+\ Helper: Copy 256-bit using stack
+: 256@! ( src dest -- )
+    SWAP 256@ ROT 256! ;
 
 \ =========================================================
 \ 256-bit Memory-Based Addition (Little Endian)
