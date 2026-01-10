@@ -270,7 +270,174 @@ VARIABLE WALLET-LOADED
     MEMPOOL-STATS ;
 
 \ ---------------------------------------------------------
-\ 6. Help System
+\ 6. Multi-Sig Wallet Commands
+\ ---------------------------------------------------------
+
+CREATE CURRENT-MULTISIG MULTISIG-WALLET-SIZE ALLOT
+VARIABLE MULTISIG-LOADED
+
+\ Create 2-of-3 multi-sig wallet
+: CMD-MULTISIG-NEW-2OF3 ( -- )
+    ." " CR
+    ." Creating 2-of-3 multi-sig wallet..." CR
+    ." (Using current wallet + 2 additional pubkeys)" CR
+    ." " CR
+    
+    \ For MVP: Generate 3 wallets
+    CREATE WALLET1 WALLET-SIZE ALLOT
+    CREATE WALLET2 WALLET-SIZE ALLOT
+    CREATE WALLET3 WALLET-SIZE ALLOT
+    
+    WALLET1 INIT-WALLET
+    WALLET2 INIT-WALLET
+    WALLET3 INIT-WALLET
+    
+    ." Generated 3 keypairs:" CR
+    ." [1] " WALLET1 WALLET-ADDRESS 25 0 DO
+        DUP I + C@ .BYTE
+    LOOP DROP CR
+    ." [2] " WALLET2 WALLET-ADDRESS 25 0 DO
+        DUP I + C@ .BYTE
+    LOOP DROP CR
+    ." [3] " WALLET3 WALLET-ADDRESS 25 0 DO
+        DUP I + C@ .BYTE
+    LOOP DROP CR
+    
+    \ Create multi-sig wallet
+    WALLET1 WALLET-PUBKEY
+    WALLET2 WALLET-PUBKEY
+    WALLET3 WALLET-PUBKEY
+    CURRENT-MULTISIG CREATE-2OF3-MULTISIG
+    
+    TRUE MULTISIG-LOADED !
+    
+    ." " CR
+    CURRENT-MULTISIG SHOW-MULTISIG-WALLET ;
+
+\ Create treasury wallet (3-of-5)
+: CMD-MULTISIG-TREASURY ( -- )
+    ." " CR
+    ." Creating TREASURY wallet (3-of-5)..." CR
+    ." Requires 3 board member signatures" CR
+    ." " CR
+    
+    \ Generate 5 wallets for board members
+    CREATE BOARD-WALLETS 5 WALLET-SIZE * ALLOT
+    CREATE BOARD-PUBKEYS 5 64 * ALLOT
+    
+    5 0 DO
+        I WALLET-SIZE * BOARD-WALLETS +
+        DUP INIT-WALLET
+        
+        ." [Board Member " I 1+ . ." ] "
+        DUP WALLET-ADDRESS 25 0 DO
+            DUP I + C@ .BYTE
+        LOOP DROP CR
+        
+        \ Copy pubkey to array
+        WALLET-PUBKEY
+        I 64 * BOARD-PUBKEYS +
+        64 CMOVE
+    LOOP
+    
+    BOARD-PUBKEYS CURRENT-MULTISIG CREATE-TREASURY-WALLET
+    TRUE MULTISIG-LOADED !
+    
+    ." " CR
+    CURRENT-MULTISIG SHOW-MULTISIG-WALLET ;
+
+\ Create budget wallet (2-of-3)
+: CMD-MULTISIG-BUDGET ( -- )
+    ." " CR
+    ." Creating BUDGET wallet (2-of-3)..." CR
+    ." Requires 2 manager signatures" CR
+    ." " CR
+    
+    CREATE MGR-WALLETS 3 WALLET-SIZE * ALLOT
+    CREATE MGR-PUBKEYS 3 64 * ALLOT
+    
+    3 0 DO
+        I WALLET-SIZE * MGR-WALLETS +
+        DUP INIT-WALLET
+        
+        ." [Manager " I 1+ . ." ] "
+        DUP WALLET-ADDRESS 25 0 DO
+            DUP I + C@ .BYTE
+        LOOP DROP CR
+        
+        \ Copy pubkey
+        WALLET-PUBKEY
+        I 64 * MGR-PUBKEYS +
+        64 CMOVE
+    LOOP
+    
+    MGR-PUBKEYS CURRENT-MULTISIG CREATE-BUDGET-WALLET
+    TRUE MULTISIG-LOADED !
+    
+    ." " CR
+    CURRENT-MULTISIG SHOW-MULTISIG-WALLET ;
+
+\ Show current multi-sig wallet
+: CMD-MULTISIG-INFO ( -- )
+    MULTISIG-LOADED @ 0= IF
+        ." ✗ No multi-sig wallet loaded!" CR
+        EXIT
+    THEN
+    
+    CURRENT-MULTISIG SHOW-MULTISIG-WALLET ;
+
+\ Show partial signatures
+: CMD-MULTISIG-SIGS ( -- )
+    MULTISIG-LOADED @ 0= IF
+        ." ✗ No multi-sig wallet loaded!" CR
+        EXIT
+    THEN
+    
+    SHOW-PARTIAL-SIGS ;
+
+\ Sign multi-sig transaction
+: CMD-MULTISIG-SIGN ( -- )
+    MULTISIG-LOADED @ 0= IF
+        ." ✗ No multi-sig wallet loaded!" CR
+        EXIT
+    THEN
+    
+    WALLET-LOADED @ 0= IF
+        ." ✗ No signing wallet loaded!" CR
+        EXIT
+    THEN
+    
+    ." Signing multi-sig transaction..." CR
+    
+    \ Sign with current wallet
+    MULTISIG-TX-BUILDER
+    CURRENT-WALLET WALLET-PRIVKEY
+    CURRENT-WALLET WALLET-PUBKEY
+    SIGN-MULTISIG-PARTIAL
+    
+    ." ✓ Partial signature added" CR
+    SHOW-PARTIAL-SIGS ;
+
+\ Finalize and broadcast multi-sig transaction
+: CMD-MULTISIG-BROADCAST ( -- )
+    MULTISIG-LOADED @ 0= IF
+        ." ✗ No multi-sig wallet loaded!" CR
+        EXIT
+    THEN
+    
+    ." Finalizing multi-sig transaction..." CR
+    
+    CURRENT-MULTISIG MULTISIG-TX-BUILDER FINALIZE-MULTISIG-TX IF
+        ." ✓ Transaction finalized!" CR
+        ." Broadcasting to network..." CR
+        MULTISIG-TX-BUILDER BROADCAST-TX
+        ." ✓ Broadcast complete!" CR
+    ELSE
+        ." ✗ Finalization failed (not enough signatures?)" CR
+    THEN ;
+
+\ ---------------------------------------------------------
+\ 7. Help System
 \ ---------------------------------------------------------
 
 : CMD-HELP ( -- )
@@ -289,6 +456,15 @@ VARIABLE WALLET-LOADED
     ."   address          Show your address" CR
     ."   utxos            List unspent outputs" CR
     ."   send <addr> <amount>  Send coins" CR
+    ." " CR
+    ." MULTI-SIG WALLETS:" CR
+    ."   multisig-2of3    Create 2-of-3 multi-sig" CR
+    ."   multisig-treasury Create 3-of-5 treasury" CR
+    ."   multisig-budget  Create 2-of-3 budget" CR
+    ."   multisig-info    Show multi-sig wallet" CR
+    ."   multisig-sign    Sign multi-sig tx" CR
+    ."   multisig-sigs    Show signatures" CR
+    ."   multisig-broadcast Finalize and send" CR
     ." " CR
     ." MINING:" CR
     ."   mine             Mine a new block" CR
@@ -347,6 +523,34 @@ CREATE CMD-BUFFER 256 ALLOT
     
     2DUP s" mine" COMPARE 0= IF
         2DROP CMD-MINE EXIT
+    THEN
+    
+    2DUP s" multisig-2of3" COMPARE 0= IF
+        2DROP CMD-MULTISIG-NEW-2OF3 EXIT
+    THEN
+    
+    2DUP s" multisig-treasury" COMPARE 0= IF
+        2DROP CMD-MULTISIG-TREASURY EXIT
+    THEN
+    
+    2DUP s" multisig-budget" COMPARE 0= IF
+        2DROP CMD-MULTISIG-BUDGET EXIT
+    THEN
+    
+    2DUP s" multisig-info" COMPARE 0= IF
+        2DROP CMD-MULTISIG-INFO EXIT
+    THEN
+    
+    2DUP s" multisig-sign" COMPARE 0= IF
+        2DROP CMD-MULTISIG-SIGN EXIT
+    THEN
+    
+    2DUP s" multisig-sigs" COMPARE 0= IF
+        2DROP CMD-MULTISIG-SIGS EXIT
+    THEN
+    
+    2DUP s" multisig-broadcast" COMPARE 0= IF
+        2DROP CMD-MULTISIG-BROADCAST EXIT
     THEN
     
     2DUP s" help" COMPARE 0= IF
