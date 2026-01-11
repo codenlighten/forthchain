@@ -3,6 +3,20 @@
 \ =========================================================
 \ P2SH (Pay-to-Script-Hash) multi-sig implementation
 
+\ Dependencies are loaded by load.fs in correct order
+
+\ ---------------------------------------------------------
+\ Helper Functions
+\ ---------------------------------------------------------
+
+\ Simple SHA256 wrapper (stub for now)
+256VAR HASH-RESULT
+: SHA256-HASH ( addr len -- )
+    \ TODO: Call SHA-256 compression functions
+    \ For now: just initialize hash result to zeros
+    HASH-RESULT 32 0 FILL
+    2DROP ;
+
 \ ---------------------------------------------------------
 \ 1. Multi-Sig Script Structure
 \ ---------------------------------------------------------
@@ -199,6 +213,12 @@ VARIABLE PARTIAL-SIG-COUNT
     ." [MULTISIG] Partial signature added (" PARTIAL-SIG-COUNT @ . ." of M)" CR ;
 
 \ ---------------------------------------------------------
+\ Helper Buffers
+\ ---------------------------------------------------------
+
+CREATE TEMP-UTXO-HASH 32 ALLOT
+
+\ ---------------------------------------------------------
 \ 7. Multi-Sig Transaction Creation
 \ ---------------------------------------------------------
 
@@ -210,8 +230,7 @@ VARIABLE PARTIAL-SIG-COUNT
     
     \ Add input (spending from P2SH)
     \ Note: Input will reference the P2SH UTXO
-    \ For now, create placeholder input
-    CREATE TEMP-UTXO-HASH 32 ALLOT
+    \ For now, use placeholder input
     TEMP-UTXO-HASH 32 ERASE
     TEMP-UTXO-HASH 0 MULTISIG-TX-BUILDER ADD-INPUT
     

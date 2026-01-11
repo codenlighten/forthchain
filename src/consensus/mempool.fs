@@ -9,7 +9,7 @@
 \   - Get transactions for block building
 \   - Validate transactions before adding
 
-REQUIRE consensus/transactions.fs
+\ Dependencies are loaded by load.fs in correct order
 
 \ =========================================================
 \ Mempool Structure

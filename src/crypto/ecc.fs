@@ -9,7 +9,7 @@
 \ Order (n):       FFFFFFFF FFFFFFFF FFFFFFFF FFFFFFFE 
 \                  BAAEDCE6 AF48A03B BFD25E8C D0364141
 
-REQUIRE ../math/math256.fs
+\ Dependencies are loaded by load.fs in correct order
 
 \ =========================================================
 \ Constants: secp256k1 Parameters

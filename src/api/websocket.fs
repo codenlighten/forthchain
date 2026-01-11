@@ -15,7 +15,7 @@
 \ Created: 2026-01-10
 \ =========================================================
 
-REQUIRE src/api/query.fs
+\ Dependencies are loaded by load.fs in correct order
 
 \ ---------------------------------------------------------
 \ 1. WebSocket Protocol Constants

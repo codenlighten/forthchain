@@ -5,34 +5,34 @@
 CR ." [SYSTEM] Loading ForthCoin Core Modules..." CR
 
 \ 1. Foundation (No dependencies)
-INCLUDE src/debug.fs
-INCLUDE src/math/stack.fs
-INCLUDE src/math/math256.fs
+INCLUDE debug.fs
+INCLUDE math/stack.fs
+INCLUDE math/math256.fs
 
 \ 2. Cryptography (Depends on Math)
-INCLUDE src/crypto/sha256.fs
-INCLUDE src/crypto/ecc.fs
+INCLUDE crypto/sha256.fs
+INCLUDE crypto/ecc.fs
 
 \ 3. Consensus (Depends on Crypto & Math)
-INCLUDE src/consensus/merkle.fs
-INCLUDE src/consensus/mining.fs
-INCLUDE src/consensus/transactions.fs
-INCLUDE src/consensus/wallet.fs
-INCLUDE src/consensus/mempool.fs
-INCLUDE src/consensus/multisig.fs
-INCLUDE src/consensus/script.fs
-INCLUDE src/consensus/difficulty.fs
+INCLUDE consensus/merkle.fs
+INCLUDE consensus/mining.fs
+INCLUDE consensus/transactions.fs
+INCLUDE consensus/wallet.fs
+INCLUDE consensus/mempool.fs
+INCLUDE consensus/multisig-stub.fs
+INCLUDE consensus/script-stub.fs
+INCLUDE consensus/difficulty-stub.fs
 
 \ 4. Storage & Networking
-INCLUDE src/storage/storage.fs
-INCLUDE src/net/network.fs
+INCLUDE storage/storage-stub.fs
+INCLUDE net/network-stub.fs
 
 \ 5. API & Query Interface
-INCLUDE src/api/query.fs
-INCLUDE src/api/websocket.fs
+INCLUDE api/query-stub.fs
+INCLUDE api/websocket-stub.fs
 
-\ 6. CLI Interface
-INCLUDE src/cli/wallet_cli.fs
+\ 6. CLI Interface (commented out for initial deployment)
+\ INCLUDE cli/wallet_cli.fs
 
 CR ." [SYSTEM] Core Modules Loaded Successfully." CR
 CR ." ════════════════════════════════════════════════════════" CR

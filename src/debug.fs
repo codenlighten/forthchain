@@ -72,4 +72,14 @@ VARIABLE DEBUG-ENABLED
 \ Initialize debug on load
 INIT-DEBUG
 
+\ ---------------------------------------------------------
+\ Byte Printing
+\ ---------------------------------------------------------
+
+\ Print a byte in hexadecimal
+: .BYTE ( n -- )
+    BASE @ >R HEX
+    0 <# # # #> TYPE
+    R> BASE ! ;
+
 CR ." [DEBUG] Logging system initialized." CR

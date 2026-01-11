@@ -11,8 +11,28 @@
 \   - Outputs (array of TX-OUTPUT)
 \   - Locktime (4 bytes)
 
-REQUIRE ../crypto/sha256.fs
-REQUIRE ../crypto/ecc.fs
+\ Dependencies are loaded by load.fs in correct order
+
+\ =========================================================
+\ Buffer Declarations (must be before helper functions)
+\ =========================================================
+
+CREATE TX-HASH-BUFFER 1024 ALLOT
+256VAR TX-HASH-RESULT
+
+\ =========================================================
+\ Helper Functions (defined early for forward references)
+\ =========================================================
+
+\ Dummy hash input buffer creation (needs proper implementation)
+: CREATE-HASH-INPUT-BUFFER ( -- addr )
+    TX-HASH-BUFFER ;
+
+\ Dummy compute hash (uses global SHA-256)
+: COMPUTE-HASH ( -- )
+    \ This would call SHA-256 functions
+    \ For now: stub
+    ;
 
 \ =========================================================
 \ Transaction Input (TxIn)
@@ -176,9 +196,6 @@ REQUIRE ../crypto/ecc.fs
 \ Compute hash of transaction for signing
 \ Simplified: just hash the serialized transaction
 
-CREATE TX-HASH-BUFFER 1024 ALLOT
-256VAR TX-HASH-RESULT
-
 : SERIALIZE-TX ( tx-addr buffer -- length )
     >R                          \ Save buffer address
     
@@ -309,16 +326,6 @@ CREATE TX-HASH-BUFFER 1024 ALLOT
     $88 OVER 23 + C!    \ OP_EQUALVERIFY
     $AC SWAP 24 + C!    \ OP_CHECKSIG
     ;                   \ Total: 25 bytes
-
-\ Dummy hash input buffer creation (needs proper implementation)
-: CREATE-HASH-INPUT-BUFFER ( -- addr )
-    TX-HASH-BUFFER ;
-
-\ Dummy compute hash (uses global SHA-256)
-: COMPUTE-HASH ( -- )
-    \ This would call SHA-256 functions
-    \ For now: stub
-    ;
 
 \ =========================================================
 \ Initialization

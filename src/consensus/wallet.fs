@@ -9,8 +9,7 @@
 \   - Transaction building
 \   - Balance tracking
 
-REQUIRE ../crypto/ecc.fs
-REQUIRE consensus/transactions.fs
+\ Dependencies are loaded by load.fs in correct order
 
 \ =========================================================
 \ Wallet Structure
